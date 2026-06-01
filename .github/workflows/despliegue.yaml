@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  # Etapa 1: Preparación (podrías agregar aquí tests de sintaxis de red)
+  # Etapa 1: Build
   build:
     runs-on: ubuntu-latest
     steps:
@@ -29,7 +29,7 @@ jobs:
           az network vnet create --resource-group "$GRUPO" --name "vnet-$GRUPO" --location eastus --address-prefix 10.0.0.0/16
           az network vnet subnet create --resource-group "$GRUPO" --vnet-name "vnet-$GRUPO" --name "subnet-$GRUPO" --address-prefixes 10.0.1.0/24
 
-  # Etapa 3: Despliegue en QA (Requiere aprobación manual en GitHub)
+  # Etapa 3: Despliegue en QA
   deploy-qa:
     needs: deploy-dev
     runs-on: ubuntu-latest
@@ -44,9 +44,9 @@ jobs:
           az network vnet create --resource-group "$GRUPO" --name "vnet-$GRUPO" --location eastus --address-prefix 10.0.0.0/16
           az network vnet subnet create --resource-group "$GRUPO" --vnet-name "vnet-$GRUPO" --name "subnet-$GRUPO" --address-prefixes 10.0.1.0/24
 
-  # Etapa 4: Despliegue en PROD (Requiere aprobación manual en GitHub)
+  # Etapa 4: Despliegue en PROD
   deploy-prod:
-    needs: deploy-staging # O 'deploy-qa' según tu nomenclatura
+    needs: deploy-qa
     runs-on: ubuntu-latest
     environment: PROD
     env:
