@@ -36,11 +36,13 @@ jobs:
           az network vnet create \
             --resource-group $RESOURCE_GROUP \
             --name $VNET_NAME \
-            --address-prefix 10.0.0.0/16
-          
-          echo "Creando VNet..."
-          az network vnet create \
-            --resource-group $RESOURCE_GROUP \
-            --name $VNET_NAME \
             --location eastus \
             --address-prefix 10.0.0.0/16
+
+          # 2. Crear la Subnet
+          echo "Creando Subnet..."
+          az network vnet subnet create \
+            --resource-group $RESOURCE_GROUP \
+            --vnet-name $VNET_NAME \
+            --name $SUBNET_NAME \
+            --address-prefixes 10.0.1.0/24
