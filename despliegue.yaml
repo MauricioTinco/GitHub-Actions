@@ -1,9 +1,15 @@
-name: Mi Primera Acción
-on: [push] # Se ejecuta en cada push
-
 jobs:
-  saludo:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Decir hola
-        run: echo "¡Hola! GitHub Actions está funcionando correctamente."
+      - uses: actions/checkout@v4
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 'Deploy to Azure'
+        run: |
+          # Aquí van tus comandos de despliegue, por ejemplo:
+          az webapp up --name nombre-de-tu-app --resource-group nombre-rg
