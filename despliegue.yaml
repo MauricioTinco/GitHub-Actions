@@ -1,0 +1,9 @@
+name: Mi Primera Acción
+on: [push] # Se ejecuta en cada push
+
+jobs:
+  saludo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decir hola
+        run: echo "¡Hola! GitHub Actions está funcionando correctamente."
