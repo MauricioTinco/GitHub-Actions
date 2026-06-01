@@ -3,11 +3,18 @@ name: Deploy a Azure
 on:
   push:
     branches:
+      - develop
+      - release
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    
+    # Asignación de ambiente según la rama
+    environment: 
+      name: ${{ github.ref == 'refs/heads/main' && 'PROD' || (github.ref == 'refs/heads/release' && 'QA' || 'DEV') }}
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -16,33 +23,20 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_ACCESS }}
 
-      - name: 'Probar conexión'
+      - name: 'Desplegar en Azure'
         run: |
-          az account show
-
-      - name: 'Deploy to Azure'
-        run: |
-          echo "Desplegando en Azure..."
-
-      - name: 'Crear Subnet de prueba'
-        run: |
-          # Definimos variables para orden
-          RESOURCE_GROUP="prueba-CICD"
-          VNET_NAME="mi-vnet-prueba"
-          SUBNET_NAME="mi-subnet-automatizada"
-
-          # 1. Crear el VNet (Red virtual) si no existe 
-          echo "Creando VNet..."
+          # $GRUPO es la variable que configuraste en cada entorno de GitHub
+          echo "Desplegando en el grupo: $GRUPO"
+          
           az network vnet create \
-            --resource-group $RESOURCE_GROUP \
-            --name $VNET_NAME \
+            --resource-group $GRUPO \
+            --name "vnet-$GRUPO" \
             --location eastus \
             --address-prefix 10.0.0.0/16
-
-          # 2. Crear la Subnet
+          
           echo "Creando Subnet..."
           az network vnet subnet create \
-            --resource-group $RESOURCE_GROUP \
-            --vnet-name $VNET_NAME \
-            --name $SUBNET_NAME \
+            --resource-group $GRUPO \
+            --vnet-name "vnet-$GRUPO" \
+            --name "subnet-$GRUPO" \
             --address-prefixes 10.0.1.0/24
