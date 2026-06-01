@@ -27,7 +27,7 @@ jobs:
       - name: 'Crear Subnet de prueba'
         run: |
           # Definimos variables para orden
-          RESOURCE_GROUP="tu-grupo-de-recursos"
+          RESOURCE_GROUP="prueba-CICD"
           VNET_NAME="mi-vnet-prueba"
           SUBNET_NAME="mi-subnet-automatizada"
 
