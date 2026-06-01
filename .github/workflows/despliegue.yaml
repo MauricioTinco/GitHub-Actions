@@ -11,7 +11,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     
-    # Asignación de ambiente según la rama
+    # Asignación dinámica de ambiente según la rama
     environment: 
       name: ${{ github.ref == 'refs/heads/main' && 'PROD' || (github.ref == 'refs/heads/release' && 'QA' || 'DEV') }}
     
@@ -24,19 +24,23 @@ jobs:
           creds: ${{ secrets.AZURE_ACCESS }}
 
       - name: 'Desplegar en Azure'
+        # Mapeamos la variable de entorno de GitHub 'GRUPO' a una variable de shell
+        env:
+          GRUPO: ${{ vars.GRUPO }}
         run: |
-          # $GRUPO es la variable que configuraste en cada entorno de GitHub
           echo "Desplegando en el grupo: $GRUPO"
           
+          # Crear VNet
           az network vnet create \
-            --resource-group $GRUPO \
+            --resource-group "$GRUPO" \
             --name "vnet-$GRUPO" \
             --location eastus \
             --address-prefix 10.0.0.0/16
           
+          # Crear Subnet
           echo "Creando Subnet..."
           az network vnet subnet create \
-            --resource-group $GRUPO \
+            --resource-group "$GRUPO" \
             --vnet-name "vnet-$GRUPO" \
             --name "subnet-$GRUPO" \
             --address-prefixes 10.0.1.0/24
