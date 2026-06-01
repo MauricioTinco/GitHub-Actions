@@ -1,8 +1,9 @@
 name: Deploy a Azure
+
 on:
   push:
     branches:
-      - main  # Solo se dispara cuando envías código a la rama principal
+      - main
 
 jobs:
   build-and-deploy:
@@ -13,13 +14,34 @@ jobs:
       - name: 'Login via Azure CLI'
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_ACCESS }} # Asegúrate que este nombre coincida con tu Secret
+          creds: ${{ secrets.AZURE_ACCESS }}
 
       - name: 'Probar conexión'
         run: |
-          az account show  # Esto imprime los detalles de tu suscripción si el login fue exitoso
-          
+          az account show
+
       - name: 'Deploy to Azure'
         run: |
-          # Aquí iría tu comando real de despliegue
           echo "Desplegando en Azure..."
+
+      - name: 'Crear Subnet de prueba'
+        run: |
+          # Definimos variables para orden
+          RESOURCE_GROUP="tu-grupo-de-recursos"
+          VNET_NAME="mi-vnet-prueba"
+          SUBNET_NAME="mi-subnet-automatizada"
+
+          # 1. Crear el VNet (Red virtual) si no existe 
+          echo "Creando VNet..."
+          az network vnet create \
+            --resource-group $RESOURCE_GROUP \
+            --name $VNET_NAME \
+            --address-prefix 10.0.0.0/16
+
+          # 2. Crear la Subnet
+          echo "Creando Subnet..."
+          az network vnet subnet create \
+            --resource-group $RESOURCE_GROUP \
+            --vnet-name $VNET_NAME \
+            --name $SUBNET_NAME \
+            --address-prefixes 10.0.1.0/24
